@@ -1,5 +1,7 @@
 /bin/
 /obj/
+/cmd/*
+!/cmd/run.sh
 .vscode
 CLex.fs
 CPar.fs

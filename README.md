@@ -9,7 +9,7 @@ dotnet clean interpc.fsproj       # 可选
 dotnet build -v n interpc.fsproj  # 构建 ./bin/Debug/net6.0/interpc，-v n 查看详细生成过程
 
 # 执行解释器
-./bin/Debug/net6.0/interpc.exe example/ex_interpc.c 8
+./bin/Debug/net6.0/interpc example/ex_interpc.c 8
 dotnet run --project interpc.fsproj example/ex_interpc.c 8
 dotnet run --project interpc.fsproj -g example/ex_interpc.c 8  # 显示token AST 等调试信息
 
@@ -38,7 +38,7 @@ dotnet run --project microcc.fsproj example/ex_microcc.c  # 执行编译器（�
 # dotnet
 dotnet clean machine.csproj
 dotnet run --project machine.csproj -t example/ex_machine.out 3  # 运行虚拟机（运行前需 clean），-t 查看跟踪信息
-./bin/Debug/net6.0/machine example/ex_machine.out 3           # 直接执行
+./bin/Debug/net6.0/machine -t example/ex_machine.out 3           # 直接执行
 
 # c
 gcc -o machine machine.c                   # 编译 c 虚拟机
