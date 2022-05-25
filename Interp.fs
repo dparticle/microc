@@ -357,6 +357,22 @@ and eval e locEnv gloEnv store : int * store =
         else
             eval e2 locEnv gloEnv store1
     | Call (f, es) -> callfun f es locEnv gloEnv store
+    | PreSelf (ope, acc) ->
+        let (loc, store1) = access acc locEnv gloEnv store
+        let res = getSto store loc
+
+        match ope with
+        | "++" -> (res + 1, setSto store1 loc (res + 1))
+        | "--" -> (res - 1, setSto store1 loc (res - 1))
+        | _ -> failwith ("unknow operator" + ope)
+    | PostSelf (ope, acc) ->
+        let (loc, store1) = access acc locEnv gloEnv store
+        let res = getSto store loc
+
+        match ope with
+        | "++" -> (res, setSto store1 loc (res + 1))
+        | "--" -> (res, setSto store1 loc (res - 1))
+        | _ -> failwith ("unknow operator" + ope)
 
 and access acc locEnv gloEnv store : int * store =
     match acc with

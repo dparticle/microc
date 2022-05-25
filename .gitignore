@@ -1,7 +1,8 @@
-/bin/
-/obj/
-/cmd/*
-!/cmd/run.sh
+bin/
+obj/
+cmd/*
+!cmd/run.sh
+!cmd/clean.sh
 .vscode
 CLex.fs
 CPar.fs
