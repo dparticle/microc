@@ -283,6 +283,24 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
             | ">"   -> SWAP :: LT :: C
             | "<="  -> SWAP :: LT :: addNOT C
             | _     -> failwith "unknown primitive 2"))
+    | Prim4(str, acc, e)->
+      match str with
+      | "+" ->
+        let ass = Assign (acc,Prim2("+", Access acc, e))
+        cExpr ass varEnv funEnv C
+      | "-" ->
+        let ass = Assign (acc,Prim2("-", Access acc, e))
+        cExpr ass varEnv funEnv C
+      | "*" ->
+        let ass = Assign (acc,Prim2("*", Access acc, e))
+        cExpr ass varEnv funEnv C
+      | "/" ->
+        let ass = Assign (acc,Prim2("/", Access acc, e))
+        cExpr ass varEnv funEnv C
+      | "%" ->
+        let ass = Assign (acc,Prim2("%", Access acc, e))
+        cExpr ass varEnv funEnv C
+      | _ -> failwith("unknow prim" + str + "=")
     | Andalso(e1, e2) ->
       match C with
       | IFZERO lab :: _ ->
@@ -303,7 +321,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
       | IFNZRO lab :: _ ->
         cExpr e1 varEnv funEnv (IFNZRO lab :: cExpr e2 varEnv funEnv C)
       | IFZERO labthen :: C1 ->
-        let(labelse, C2) = addLabel C1
+        let (labelse, C2) = addLabel C1
         cExpr e1 varEnv funEnv
            (IFNZRO labelse :: cExpr e2 varEnv funEnv
              (IFZERO labthen :: C2))
@@ -322,7 +340,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
         | "--" ->
           let ass = Assign(acc, Prim2("-", Access acc, CstI 1))
           cExpr ass varEnv funEnv C
-        | _ -> failwith "PreOperation unknow"
+        | _ -> failwith ("unknow operator" + ope)
     | PostSelf (ope, acc) ->
       match ope with
         | "++" ->
@@ -331,7 +349,7 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
         | "--" ->
           let C1 = cExpr (Access acc) varEnv funEnv C
           CSTI 1 :: SUB :: C1
-        | _ -> failwith "PostOperation unknow"
+        | _ -> failwith ("unknow operator" + ope)
 
 (* Generate code to access variable, dereference pointer or index array: *)
 

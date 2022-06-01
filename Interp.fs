@@ -342,6 +342,27 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
+    | Prim4 (str, acc, e1) ->
+        let (ass, store1) = access acc locEnv gloEnv store
+        let value = getSto store1 ass
+        let (exprValue, store2) = eval e1 locEnv gloEnv store1
+        match str with
+        | "+" ->
+            let res = value + exprValue
+            (res,setSto store2 ass res)
+        | "-" ->
+            let res = value - exprValue
+            (res,setSto store2 ass res)
+        | "*" ->
+            let res = value * exprValue
+            (res,setSto store2 ass res)
+        | "/" ->
+            let res = value / exprValue
+            (res,setSto store2 ass res)
+        | "%" ->
+            let res = value % exprValue
+            (res,setSto store2 ass res)
+        | _ -> failwith("unknow prim" + str + "=")
     | Andalso (e1, e2) ->
         let (i1, store1) as res = eval e1 locEnv gloEnv store
 
