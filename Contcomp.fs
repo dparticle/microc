@@ -36,6 +36,8 @@ type bstmtordec =
 (* Code-generating functions that perform local optimizations *)
 
 let rec addINCSP m1 C : instr list =
+    // print
+    printfn "addINCSP %A" C
     match C with
     | INCSP m2            :: C1 -> addINCSP (m1+m2) C1
     | RET m2              :: C1 -> RET (m2-m1) :: C1
@@ -43,6 +45,8 @@ let rec addINCSP m1 C : instr list =
     | _                         -> if m1=0 then C else INCSP m1 :: C
 
 let addLabel C : label * instr list =          (* Conditional jump to C *)
+    // print
+    printfn "addLabel %A" C
     match C with
     | Label lab :: _ -> (lab, C)
     | GOTO lab :: _  -> (lab, C)
@@ -50,6 +54,8 @@ let addLabel C : label * instr list =          (* Conditional jump to C *)
                         (lab, Label lab :: C)
 
 let makeJump C : instr * instr list =          (* Unconditional jump to C *)
+    // print
+    printfn "makeJump %A" C
     match C with
     | RET m              :: _ -> (RET m, C)
     | Label lab :: RET m :: _ -> (RET m, C)
@@ -78,7 +84,10 @@ let addNOT C =
     | _                -> NOT :: C
 
 let addJump jump C =                    (* jump is GOTO or RET *)
+    // print
+    printfn "addJump %A" C
     let C1 = deadcode C
+    printfn "addJump deadcode %A" C1
     match (jump, C1) with
     | (GOTO lab1, Label lab2 :: _) -> if lab1=lab2 then C1
                                       else GOTO lab1 :: C1
@@ -88,6 +97,8 @@ let addGOTO lab C =
     addJump (GOTO lab) C
 
 let rec addCST i C =
+    // print
+    printfn "addCST %d %A" i C
     match (i, C) with
     | (0, ADD        :: C1) -> C1
     | (0, SUB        :: C1) -> C1
@@ -184,12 +195,13 @@ let makeGlobalEnvs(topdecs : topdec list) : VarEnv * FunEnv * instr list =
 *)
 
 let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr list =
+    // print
+    printfn "cStmt %A" C
     match stmt with
     | If(e, stmt1, stmt2) ->
       let (jumpend, C1) = makeJump C
       let (labelse, C2) = addLabel (cStmt stmt2 varEnv funEnv C1)
-      cExpr e varEnv funEnv (IFZERO labelse
-       :: cStmt stmt1 varEnv funEnv (addJump jumpend C2))
+      cExpr e varEnv funEnv (IFZERO labelse :: cStmt stmt1 varEnv funEnv (addJump jumpend C2))
     | While(e, body) ->
       let labbegin = newLabel()
       let (jumptest, C1) =
@@ -241,6 +253,8 @@ and bStmtordec stmtOrDec varEnv : bstmtordec * VarEnv =
  *)
 
 and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr list =
+    // print
+    printfn "cExpr %A" C
     match e with
     | Access acc     -> cAccess acc varEnv funEnv (LDI :: C)
     | Assign(acc, e) -> cAccess acc varEnv funEnv (cExpr e varEnv funEnv (STI :: C))
@@ -300,6 +314,24 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
            (IFNZRO labtrue
              :: cExpr e2 varEnv funEnv (addJump jumpend C2))
     | Call(f, es) -> callfun f es varEnv funEnv C
+    | PreSelf (ope, acc) ->
+      match ope with
+        | "++" ->
+          let ass = Assign(acc, Prim2("+", Access acc, CstI 1))
+          cExpr ass varEnv funEnv C
+        | "--" ->
+          let ass = Assign(acc, Prim2("-", Access acc, CstI 1))
+          cExpr ass varEnv funEnv C
+        | _ -> failwith "PreOperation unknow"
+    | PostSelf (ope, acc) ->
+      match ope with
+        | "++" ->
+          let C1 = cExpr (Access acc) varEnv funEnv C
+          CSTI 1 :: ADD :: C1
+        | "--" ->
+          let C1 = cExpr (Access acc) varEnv funEnv C
+          CSTI 1 :: SUB :: C1
+        | _ -> failwith "PostOperation unknow"
 
 (* Generate code to access variable, dereference pointer or index array: *)
 
