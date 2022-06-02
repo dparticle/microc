@@ -345,6 +345,23 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
           cExpr (Access acc) varEnv funEnv (
             cExpr (Assign(acc, Prim2("-", Access acc, CstI 1))) varEnv funEnv (addINCSP -1 C))
         | _ -> failwith ("unknow operator" + ope)
+    | Maxin (ope, e1, e2) ->
+      let (jumpend, C1) = makeJump C
+      let (labtrue, C2) = addLabel (cExpr e1 varEnv funEnv C1)
+      let C3 = cExpr e2 varEnv funEnv (addJump jumpend C2)
+      let e3 = Prim2("<", e1, e2)
+
+      match ope with
+        | "max" -> cExpr e3 varEnv funEnv (IFZERO labtrue :: C3)
+        | "min" -> cExpr e3 varEnv funEnv (IFNZRO labtrue :: C3)
+        | _ -> failwith ("unknow operator" + ope)
+    | Abs (e) ->
+      let (jumpend, C1) = makeJump C
+      let (labtrue, C2) = addLabel(cExpr (Prim2("*", e, CstI -1)) varEnv funEnv C1)
+
+      let e1 = Prim2("<", e, CstI 0)
+      cExpr e1 varEnv funEnv (IFNZRO labtrue :: addJump jumpend C2)
+
 
 (* Generate code to access variable, dereference pointer or index array: *)
 

@@ -342,27 +342,27 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
-    | Prim4 (str, acc, e1) ->
+    | Prim4 (ope, acc, e1) ->
         let (ass, store1) = access acc locEnv gloEnv store
         let value = getSto store1 ass
         let (exprValue, store2) = eval e1 locEnv gloEnv store1
-        match str with
+        match ope with
         | "+" ->
             let res = value + exprValue
-            (res,setSto store2 ass res)
+            (res, setSto store2 ass res)
         | "-" ->
             let res = value - exprValue
-            (res,setSto store2 ass res)
+            (res, setSto store2 ass res)
         | "*" ->
             let res = value * exprValue
-            (res,setSto store2 ass res)
+            (res, setSto store2 ass res)
         | "/" ->
             let res = value / exprValue
-            (res,setSto store2 ass res)
+            (res, setSto store2 ass res)
         | "%" ->
             let res = value % exprValue
-            (res,setSto store2 ass res)
-        | _ -> failwith("unknow prim" + str + "=")
+            (res, setSto store2 ass res)
+        | _ -> failwith("unknow prim" + ope + "=")
     | Andalso (e1, e2) ->
         let (i1, store1) as res = eval e1 locEnv gloEnv store
 
@@ -394,6 +394,17 @@ and eval e locEnv gloEnv store : int * store =
         | "++" -> (res, setSto store1 loc (res + 1))
         | "--" -> (res, setSto store1 loc (res - 1))
         | _ -> failwith ("unknow operator" + ope)
+    | Maxin (ope, e1, e2) ->
+        let (i1, store1) as res1 = eval e1 locEnv gloEnv store
+        let (i2, store2) as res2 = eval e2 locEnv gloEnv store
+
+        match ope with
+        | "max" -> if i1 > i2 then res1 else res2
+        | "min" -> if i1 < i2 then res1 else res2
+        | _ -> failwith ("unknow operator" + ope)
+    | Abs (e) ->
+        let (i, store) = eval e locEnv gloEnv store
+        (abs(i), store)
 
 and access acc locEnv gloEnv store : int * store =
     match acc with

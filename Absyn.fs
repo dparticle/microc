@@ -28,8 +28,10 @@ and expr =                           // 表达式，右值
   | Andalso of expr * expr           (* Sequential and              *)
   | Orelse of expr * expr            (* Sequential or               *)
   | Call of string * expr list       (* Function call f(...)        *)
-  | PreSelf of string * access
-  | PostSelf of string * access
+  | PreSelf of string * access       (* ++i/--i                     *)
+  | PostSelf of string * access      (* i++/i--                     *)
+  | Maxin of string * expr * expr    (* max/min                     *)
+  | Abs of expr                      (* abs                         *)
 
 and access =                         //左值，存储的位置
   | AccVar of string                 (* Variable access        x    *)
