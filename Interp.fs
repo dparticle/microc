@@ -207,6 +207,7 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
         match typ with
         //数组 调用 initSto 分配 i 个空间
         | TypA (t, Some i) -> (nextloc + i, nextloc, initSto nextloc i sto0)
+        | TypS -> (nextloc + 10, 0, initSto nextloc 10 sto0)
         // 常规变量默认值是 0
         | _ -> (nextloc, 0, sto0)
 
@@ -303,9 +304,20 @@ and eval e locEnv gloEnv store : int * store =
         (getSto store1 loc, store1)
     | Assign (acc, e) ->
         let (loc, store1) = access acc locEnv gloEnv store
-        let (res, store2) = eval e locEnv gloEnv store1
+        let (res, store2) =
+            match e with
+            | CstS s ->
+                let rec loop i store =
+                    if i < s.Length then
+                        let store1 = setSto store (loc - i - 1) (int (s.Chars(i)))
+                        loop (i + 1) store1
+                    else
+                        store
+                (s.Length, loop 0 store1)
+            | _ -> eval e locEnv gloEnv store1
         (res, setSto store2 loc res)
     | CstI i -> (i, store)
+    | CstS s -> (s.Length, store)
     | Addr acc -> access acc locEnv gloEnv store
     | Prim1 (ope, e1) ->
         let (i1, store1) = eval e1 locEnv gloEnv store
@@ -314,11 +326,35 @@ and eval e locEnv gloEnv store : int * store =
             match ope with
             | "!" -> if i1 = 0 then 1 else 0
             | "printi" ->
-                (printf "%d " i1
-                 i1)
+                printf "%d " i1
+                i1
             | "printc" ->
-                (printf "%c" (char i1)
-                 i1)
+                printf "%c" (char i1)
+                i1
+            | "prints" ->
+                match e1 with
+                | Access acc ->
+                    let (loc, store1) = access acc locEnv gloEnv store
+                    let mutable str = ""
+                    let mutable i = 0
+
+                    while i < i1 do
+                        str <- str + (char (getSto store1 (loc - 1 - i))).ToString()
+                        i <- i + 1
+
+                    printf "%s" str
+                    i1
+                | CstS s ->
+                    let mutable str = ""
+                    let mutable i = 0
+
+                    while i < i1 do
+                        str <- str + (s.Chars(i)).ToString()
+                        i <- i + 1
+
+                    printf "%s" str
+                    i1
+                | _ -> failwith ("not support expr")
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store1)
