@@ -35,6 +35,7 @@ type bstmtordec =
 
 (* Code-generating functions that perform local optimizations *)
 
+// 调整 p 堆栈
 let rec addINCSP m1 C : instr list =
     // print
     printfn "addINCSP %A" C
@@ -201,7 +202,8 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr 
     | If(e, stmt1, stmt2) ->
       let (jumpend, C1) = makeJump C
       let (labelse, C2) = addLabel (cStmt stmt2 varEnv funEnv C1)
-      cExpr e varEnv funEnv (IFZERO labelse :: cStmt stmt1 varEnv funEnv (addJump jumpend C2))
+      cExpr e varEnv funEnv (
+        IFZERO labelse :: cStmt stmt1 varEnv funEnv (addJump jumpend C2))
     | While(e, body) ->
       let labbegin = newLabel()
       let (jumptest, C1) =
@@ -256,8 +258,8 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
     // print
     printfn "cExpr %A" C
     match e with
-    | Access acc     -> cAccess acc varEnv funEnv (LDI :: C)
-    | Assign(acc, e) -> cAccess acc varEnv funEnv (cExpr e varEnv funEnv (STI :: C))
+    | Access acc     -> cAccess acc varEnv funEnv (LDI :: C)  // 获取 acc 对应的值
+    | Assign(acc, e) -> cAccess acc varEnv funEnv (cExpr e varEnv funEnv (STI :: C))  // 赋值
     | CstI i         -> addCST i C
     | Addr acc       -> cAccess acc varEnv funEnv C
     | Prim1(ope, e1) ->
@@ -286,20 +288,15 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
     | Prim4(str, acc, e)->
       match str with
       | "+" ->
-        let ass = Assign (acc,Prim2("+", Access acc, e))
-        cExpr ass varEnv funEnv C
+        cExpr (Assign(acc, Prim2("+", Access acc, e))) varEnv funEnv C
       | "-" ->
-        let ass = Assign (acc,Prim2("-", Access acc, e))
-        cExpr ass varEnv funEnv C
+        cExpr (Assign(acc, Prim2("-", Access acc, e))) varEnv funEnv C
       | "*" ->
-        let ass = Assign (acc,Prim2("*", Access acc, e))
-        cExpr ass varEnv funEnv C
+        cExpr (Assign(acc, Prim2("*", Access acc, e))) varEnv funEnv C
       | "/" ->
-        let ass = Assign (acc,Prim2("/", Access acc, e))
-        cExpr ass varEnv funEnv C
+        cExpr (Assign(acc, Prim2("/", Access acc, e))) varEnv funEnv C
       | "%" ->
-        let ass = Assign (acc,Prim2("%", Access acc, e))
-        cExpr ass varEnv funEnv C
+        cExpr (Assign(acc, Prim2("%", Access acc, e))) varEnv funEnv C
       | _ -> failwith("unknow prim" + str + "=")
     | Andalso(e1, e2) ->
       match C with
@@ -335,30 +332,29 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
     | PreSelf (ope, acc) ->
       match ope with
         | "++" ->
-          let ass = Assign(acc, Prim2("+", Access acc, CstI 1))
-          cExpr ass varEnv funEnv C
+          cExpr (Assign(acc, Prim2("+", Access acc, CstI 1))) varEnv funEnv C
         | "--" ->
-          let ass = Assign(acc, Prim2("-", Access acc, CstI 1))
-          cExpr ass varEnv funEnv C
+          cExpr (Assign(acc, Prim2("-", Access acc, CstI 1))) varEnv funEnv C
         | _ -> failwith ("unknow operator" + ope)
     | PostSelf (ope, acc) ->
       match ope with
         | "++" ->
-          let C1 = cExpr (Access acc) varEnv funEnv C
-          CSTI 1 :: ADD :: C1
+          cExpr (Access acc) varEnv funEnv (  // 复制一份原数据
+            cExpr (Assign(acc, Prim2("+", Access acc, CstI 1))) varEnv funEnv (addINCSP -1 C))  // 删除 STI 保存在栈顶的值
         | "--" ->
-          let C1 = cExpr (Access acc) varEnv funEnv C
-          CSTI 1 :: SUB :: C1
+          cExpr (Access acc) varEnv funEnv (
+            cExpr (Assign(acc, Prim2("-", Access acc, CstI 1))) varEnv funEnv (addINCSP -1 C))
         | _ -> failwith ("unknow operator" + ope)
 
 (* Generate code to access variable, dereference pointer or index array: *)
 
+// 获取 acc 地址
 and cAccess access varEnv funEnv C =
     match access with
     | AccVar x   ->
       match lookup (fst varEnv) x with
       | Glovar addr, _ -> addCST addr C
-      | Locvar addr, _ -> GETBP :: addCST addr (ADD :: C)
+      | Locvar addr, _ -> GETBP :: addCST addr (ADD :: C)  // 局部变量获取相对地址
     | AccDeref e ->
       cExpr e varEnv funEnv C
     | AccIndex(acc, idx) ->
