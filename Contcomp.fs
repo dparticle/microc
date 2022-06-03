@@ -54,6 +54,7 @@ let addLabel C : label * instr list =          (* Conditional jump to C *)
     | _              -> let lab = newLabel()
                         (lab, Label lab :: C)
 
+// 退栈操作等
 let makeJump C : instr * instr list =          (* Unconditional jump to C *)
     // print
     printfn "makeJump %A" C
@@ -116,6 +117,8 @@ let rec addCST i C =
     | (_, IFNZRO lab :: C1) -> addGOTO lab C1
     | _                     -> CSTI i :: C
 
+// 上方均用于优化代码
+
 (* ------------------------------------------------------------------- *)
 
 (* Simple environment operations *)
@@ -166,24 +169,6 @@ let bindParam (env, fdepth) (typ, x) : VarEnv =
 
 let bindParams paras (env, fdepth) : VarEnv =
     List.fold bindParam (env, fdepth) paras;
-
-(* ------------------------------------------------------------------- *)
-
-(* Build environments for global variables and global functions *)
-
-let makeGlobalEnvs(topdecs : topdec list) : VarEnv * FunEnv * instr list =
-    let rec addv decs varEnv funEnv =
-        match decs with
-        | [] -> (varEnv, funEnv, [])
-        | dec::decr ->
-          match dec with
-          | Vardec (typ, x) ->
-            let (varEnv1, code1) = allocate Glovar (typ, x) varEnv
-            let (varEnvr, funEnvr, coder) = addv decr varEnv1 funEnv
-            (varEnvr, funEnvr, code1 @ coder)
-          | Fundec (tyOpt, f, xs, body) ->
-            addv decr varEnv ((f, (newLabel(), tyOpt, xs)) :: funEnv)
-    addv topdecs ([], 0) []
 
 (* ------------------------------------------------------------------- *)
 
@@ -238,6 +223,9 @@ and bStmtordec stmtOrDec varEnv : bstmtordec * VarEnv =
     | Dec (typ, x) ->
       let (varEnv1, code) = allocate Locvar (typ, x) varEnv
       (BDec code, varEnv1)
+    | DecAssign (typ, x, e) ->
+      let (varEnv1, code) = allocate Locvar (typ, x) varEnv
+      (BDec (cAccess (AccVar(x)) varEnv1 [] (cExpr e varEnv1 [] (STI :: (addINCSP -1 code)))), varEnv1)
 
 (* Compiling micro-C expressions:
 
@@ -394,6 +382,28 @@ and callfun f es varEnv funEnv C : instr list =
     else
       failwith (f + ": parameter/argument mismatch")
 
+(* ------------------------------------------------------------------- *)
+
+(* Build environments for global variables and global functions *)
+
+let makeGlobalEnvs(topdecs : topdec list) : VarEnv * FunEnv * instr list =
+    let rec addv decs varEnv funEnv =
+        match decs with
+        | [] -> (varEnv, funEnv, [])
+        | dec::decr ->
+          match dec with
+          | Vardec (typ, x) ->
+            let (varEnv1, code1) = allocate Glovar (typ, x) varEnv
+            let (varEnvr, funEnvr, coder) = addv decr varEnv1 funEnv
+            (varEnvr, funEnvr, code1 @ coder)
+          | VardecAssign (typ, x, e) ->
+                let (varEnv1, code1) = allocate Glovar (typ, x) varEnv
+                let (varEnvr, funEnvr, coder) = addv decr varEnv1 funEnv  // 递归
+                (varEnvr, funEnvr, code1 @ (cAccess (AccVar(x)) varEnvr funEnvr (cExpr e varEnvr funEnvr (STI :: (addINCSP -1 coder)))))
+          | Fundec (tyOpt, f, xs, body) ->
+            addv decr varEnv ((f, (newLabel(), tyOpt, xs)) :: funEnv)
+    addv topdecs ([], 0) []
+
 (* Compile a complete micro-C program: globals, call to main, functions *)
 
 let cProgram (Prog topdecs) : instr list =
@@ -409,7 +419,8 @@ let cProgram (Prog topdecs) : instr list =
         List.choose (function
                          | Fundec (rTy, name, argTy, body)
                                     -> Some (compilefun (rTy, name, argTy, body))
-                         | Vardec _ -> None)
+                         | Vardec _ -> None
+                         | VardecAssign _ -> None)
                          topdecs
     let (mainlab, _, mainparams) = lookup funEnv "main"
     let argc = List.length mainparams

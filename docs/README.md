@@ -165,29 +165,29 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
    - 实现 `Type i = Expr` 全局与局部初始化
 
-   - 测试样例 (example/ex_.c)
+   - 测试样例 (example/ex_.c) **编译器不支持注释部分**
 
      ```c
      // micro-C example var assign
      
      int glo_i = 1;
-     string glo_s = "s1";
+     // string glo_s = "s1";
      int glo_ii = glo_i + 1;
      
      void main() {
-         prints "glo_i: ";
+         // prints "glo_i: ";
          print glo_i;
-         prints "\nglo_ii: ";
+         // prints "\nglo_ii: ";
          print glo_ii;
          int loc_i = 3;
-         prints "\nloc_i: ";
+         // prints "\nloc_i: ";
          print loc_i;
      
-         prints "\nglo_s: ";
-         prints glo_s;
-         int loc_s = "s2";
-         prints "\nloc_s: ";
-         prints loc_s;
+         // prints "\nglo_s: ";
+         // prints glo_s;
+         // int loc_s = "s2";
+         // prints "\nloc_s: ";
+         // prints loc_s;
      }
      ```
 
@@ -203,11 +203,11 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
      编译器运行结果
 
-     
+     ![image-20220603161617964](README/image-20220603161617964.png)
 
      栈式虚拟机堆栈
 
-     
+     ![image-20220603161652398](README/image-20220603161652398.png)
 
 4. 
 
