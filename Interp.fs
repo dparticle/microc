@@ -110,6 +110,9 @@ let emptyStore = Map.empty<address, int>
 //保存value到存储store
 let setSto (store: store) addr value = store.Add(addr, value)
 
+// 从store删除addr
+let removeSto (store: store) addr = store.Remove addr
+
 //输入addr 返回存储的值value
 let getSto (store: store) addr = store.Item addr
 
@@ -361,6 +364,12 @@ and eval e locEnv gloEnv store : int * store =
             | _ -> failwith ("unknown primitive " + ope)
 
         (res, store2)
+    | Prim3 (e1, e2, e3) ->
+        let (res, store1) = eval e1 locEnv gloEnv store
+        if res = 0 then
+            eval e3 locEnv gloEnv store1
+        else
+            eval e2 locEnv gloEnv store1
     | Prim4 (ope, acc, e1) ->
         let (ass, store1) = access acc locEnv gloEnv store
         let value = getSto store1 ass

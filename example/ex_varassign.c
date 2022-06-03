@@ -12,6 +12,7 @@ void main() {
     int loc_i = 3;
     // prints "\nloc_i: ";
     print loc_i;
+    (* print (glo_i + 999); *)
 
     // prints "\nglo_s: ";
     // prints glo_s;

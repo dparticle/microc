@@ -26,19 +26,20 @@
 | ++ -- 算法操作符   | 5          | 支持 i++ ++i                        |
 | += -= 等赋值运算符 | 5          |                                     |
 | 三目运算符         |            |                                     |
-| max min abs        | 5          |                                     |
-| string 类型        | 5          |                                     |
-| print 字符串       | 5          | prints 输出字符串类型变量或者字符串 |
+| 注释 (*  *)        | 5          |                                     |
 | 变量初始化         | 5          | 支持全局                            |
-| 注释               |            |                                     |
+| max min abs        | 5          |                                     |
+| string 类型        | 4          |                                     |
+| print 字符串       | 5          | prints 输出字符串类型变量或者字符串 |
 | for while switch   |            |                                     |
 
 | 编译器             | 评分 (1-5) | 备注         |
 | ------------------ | ---------- | ------------ |
 | ++ -- 算法操作符   | 5          | 支持 i++ ++i |
-| max min abs        | 5          |              |
 | += -= 等赋值运算符 | 5          |              |
-|                    |            |              |
+| 注释               |            |              |
+| 变量初始化         | 5          | 支持全局     |
+| max min abs        | 5          |              |
 
 ### 项目说明
 
@@ -93,151 +94,272 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 ### 功能实现
 
-1. 自增自减
+#### 自增自减
 
-   - 实现 `i++` `++i` `i--` `--i` 算术运算符
+- 实现 `i++` `++i` `i--` `--i` 算术运算符
 
-   - 测试样例 (example/ex_incdec.c)
+- 测试样例 (example/ex_incdec.c)
 
-     ```c
-     // micro-C example Increment/Decrement Operator
-     
-     void main() {
-         int i;
-         i = 5;
-         print i++;
-         i = 5;
-         print ++i;
-         i = 5;
-         print i--;
-         i = 5;
-         print --i;
-     }
-     ```
+  ```c
+  // micro-C example Increment/Decrement Operator
+  
+  void main() {
+      int i;
+      i = 5;
+      print i++;
+      i = 5;
+      print ++i;
+      i = 5;
+      print i--;
+      i = 5;
+      print --i;
+  }
+  ```
 
-   - 测试结果
+- 测试结果
 
-     解释器运行结果
+  解释器运行结果
 
-     ![image-20220603085829514](README/image-20220603085829514.png)
+  <img src="README/image-20220603085829514.png" alt="image-20220603085829514" style="zoom: 50%;" />
 
-     Token 序列、抽象语法树
+  Token 序列、抽象语法树
 
-     ![image-20220603085821406](README/image-20220603085821406.png)
+  <img src="README/image-20220603085821406.png" alt="image-20220603085821406" style="zoom: 33%;" />
 
-     编译器运行结果
+  编译器运行结果
 
-     ![image-20220603085845979](README/image-20220603085845979.png)
+  <img src="README/image-20220603085845979.png" alt="image-20220603085845979" style="zoom: 67%;" />
 
-     栈式虚拟机堆栈
+  栈式虚拟机堆栈
 
-     ![image-20220603085914698](README/image-20220603085914698.png)
+  <img src="README/image-20220603085914698.png" alt="image-20220603085914698" style="zoom: 50%;" />
 
-2. 赋值运算符
+#### 赋值运算符
 
-   - 实现 `-=` `+=` `/=` `*=` `%=` 赋值运算符
+- 实现 `-=` `+=` `/=` `*=` `%=` 赋值运算符
 
-   - 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_primassign.c)
 
-     ```
-     
-     ```
+  ```c
+  // micro-C example Assignment Operator
+  // 0 1 0 5 10 5 1
+  
+  void main() {
+      int i;
+      i = 0;
+      print i;
+      i += 1;
+      print i;
+      i -= 1;
+      print i;
+      i = 5;
+      print i;
+      i *= 2;
+      print i;
+      i /= 2;
+      print i;
+      i %= 2;
+      print i;
+  }
+  ```
 
-   - 测试结果
+- 测试结果
 
-     解释器运行结果
+  解释器运行结果
 
-     
+  <img src="README/image-20220603162341235.png" alt="image-20220603162341235"  />
 
-     Token 序列、抽象语法树
+  Token 序列、抽象语法树
 
-     
+  <img src="README/image-20220603162402208.png" alt="image-20220603162402208" style="zoom: 67%;" />
 
-     编译器运行结果
+  编译器运行结果
 
-     
+  <img src="README/image-20220603162429219.png" alt="image-20220603162429219"  />
 
-     栈式虚拟机堆栈
+  栈式虚拟机堆栈
 
-     
+  <img src="README/image-20220603162505368.png" alt="image-20220603162505368" style="zoom: 67%;" />
 
-3. 变量初始化（支持下划线命名法）
+#### 三目运算符
 
-   - 实现 `Type i = Expr` 全局与局部初始化
+- 实现 `条件 ? 结果1 : 结果2`
 
-   - 测试样例 (example/ex_.c) **编译器不支持注释部分**
+- 测试样例 (example/ex_prim3.c)
 
-     ```c
-     // micro-C example var assign
-     
-     int glo_i = 1;
-     // string glo_s = "s1";
-     int glo_ii = glo_i + 1;
-     
-     void main() {
-         // prints "glo_i: ";
-         print glo_i;
-         // prints "\nglo_ii: ";
-         print glo_ii;
-         int loc_i = 3;
-         // prints "\nloc_i: ";
-         print loc_i;
-     
-         // prints "\nglo_s: ";
-         // prints glo_s;
-         // int loc_s = "s2";
-         // prints "\nloc_s: ";
-         // prints loc_s;
-     }
-     ```
+  ```c
+  // micro-C example Increment/Decrement Operator
+  
+  void main() {
+      int i = 1 > 0 ? 1 : 0;
+      print i;
+  }
+  ```
 
-   - 测试结果
+- 测试结果
 
-     解释器运行结果
+  解释器运行结果
 
-     ![image-20220603151036103](README/image-20220603151036103.png)
+  ![image-20220603204456944](README/image-20220603204456944.png)
 
-     Token 序列、抽象语法树
+  Token 序列、抽象语法树
 
-     ![image-20220603151058829](README/image-20220603151058829.png)
+  <img src="README/image-20220603204450127.png" alt="image-20220603204450127"  />
 
-     编译器运行结果
+  编译器运行结果
 
-     ![image-20220603161617964](README/image-20220603161617964.png)
+  ![image-20220603204806179](README/image-20220603204806179.png)
 
-     栈式虚拟机堆栈
+  栈式虚拟机堆栈
 
-     ![image-20220603161652398](README/image-20220603161652398.png)
+  ![image-20220603204815308](README/image-20220603204815308.png)
 
-4. 
+#### 数学表达式
 
-   - 实现 
+- 实现 `max(i, j)` `min(i, j)` `abs(i)`
 
-   - 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_maxminabs.c)
 
-     ```
-     
-     ```
+  ```c
+  // micro-C example max min abs
+  
+  void main() {
+      int i;
+      int j;
+      i = 5;
+      j = -3;
+      print max(i, j);
+      print min(i, j);
+      print abs(j);
+  }
+  ```
 
-   - 测试结果
+- 测试结果
 
-     解释器运行结果
+  解释器运行结果
 
-     
+  ![image-20220603180755506](README/image-20220603180755506.png)
 
-     Token 序列、抽象语法树
+  Token 序列、抽象语法树
 
-     
+  <img src="README/image-20220603180932472.png" alt="image-20220603180932472" style="zoom:50%;" />
 
-     编译器运行结果
+  编译器运行结果
 
-     
+  ![image-20220603180941633](README/image-20220603180941633.png)
 
-     栈式虚拟机堆栈
+  栈式虚拟机堆栈
 
-     
+  ![image-20220603183140155](README/image-20220603183140155.png)
 
-5. 
+  ![image-20220603183247887](README/image-20220603183247887.png)
+
+#### 变量初始化（支持下划线命名法、`(*  *)` 注释）
+
+- 实现 `Type i = Expr` 全局与局部初始化
+
+- 测试样例 (example/ex_varassign.c) **编译器不支持注释部分**
+
+  ```c
+  // micro-C example var assign
+  
+  int glo_i = 1;
+  // string glo_s = "s1";
+  int glo_ii = glo_i + 1;
+  
+  void main() {
+      // prints "glo_i: ";
+      print glo_i;
+      // prints "\nglo_ii: ";
+      print glo_ii;
+      int loc_i = 3;
+      // prints "\nloc_i: ";
+      print loc_i;
+    	(* print (glo_i + 999); *)
+  
+      // prints "\nglo_s: ";
+      // prints glo_s;
+      // int loc_s = "s2";
+      // prints "\nloc_s: ";
+      // prints loc_s;
+  }
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220603151036103](README/image-20220603151036103.png)
+
+  Token 序列、抽象语法树
+
+  <img src="README/image-20220603151058829.png" alt="image-20220603151058829" style="zoom:50%;" />
+
+  编译器运行结果
+
+  ![image-20220603161617964](README/image-20220603161617964.png)
+
+  栈式虚拟机堆栈
+
+  ![image-20220603161652398](README/image-20220603161652398.png)
+
+#### 
+
+- 实现 
+
+- 测试样例 (example/ex_.c)
+
+  ```
+  
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  
+
+  Token 序列、抽象语法树
+
+  
+
+  编译器运行结果
+
+  
+
+  栈式虚拟机堆栈
+
+  
+
+#### 
+
+- 实现 
+
+- 测试样例 (example/ex_.c)
+
+  ```
+  
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  
+
+  Token 序列、抽象语法树
+
+  
+
+  编译器运行结果
+
+  
+
+  栈式虚拟机堆栈
+
+  
+
+1. 
 
    
 

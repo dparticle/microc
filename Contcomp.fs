@@ -273,7 +273,13 @@ and cExpr (e : expr) (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : inst
             | ">"   -> SWAP :: LT :: C
             | "<="  -> SWAP :: LT :: addNOT C
             | _     -> failwith "unknown primitive 2"))
-    | Prim4(str, acc, e)->
+    | Prim3 (e1, e2, e3) ->
+      let (jumpend, C1) = makeJump C
+      let (lablefalse, C2) = addLabel (cExpr e3 varEnv funEnv C1)
+
+      cExpr e1 varEnv funEnv
+        (IFZERO lablefalse :: cExpr e2 varEnv funEnv (addJump jumpend C2))
+    | Prim4 (str, acc, e)->
       match str with
       | "+" ->
         cExpr (Assign(acc, Prim2("+", Access acc, e))) varEnv funEnv C
