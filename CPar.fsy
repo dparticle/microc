@@ -152,6 +152,7 @@ StmtM:  /* No unbalanced if-else */
   | FOR LPAR Expr SEMI Expr SEMI Expr RPAR StmtM  { For($3, $5, $7, $9) }
   | FOR Access IN RANGE LPAR Expr RPAR StmtM  { ForRange1($2, $6, $8)}
   | FOR Access IN RANGE LPAR Expr COMMA Expr RPAR StmtM  { ForRange2($2, $6, $8, $10)}
+  | FOR Access IN RANGE LPAR Expr COMMA Expr COMMA Expr RPAR StmtM  { ForRange3($2, $6, $8, $10, $12)}
 ;
 
 StmtU:

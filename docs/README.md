@@ -32,7 +32,7 @@
 | string 类型        | 4          | 固定长度                            |
 | print 字符串       | 5          | prints 输出字符串类型变量或者字符串 |
 | for                | 5          | for (expr; expr; expr) stmt         |
-|                    |            |                                     |
+| for in range       | 5          | 实现 python for in range 语法       |
 
 | 编译器             | 评分 (1-5) | 备注                             |
 | ------------------ | ---------- | -------------------------------- |
@@ -43,6 +43,7 @@
 | 变量初始化         | 5          | 支持全局                         |
 | max min abs        | 5          |                                  |
 | for                | 5          | for (expr; expr; expr) stmt      |
+| for in range       | 5          | 实现 python for in range 语法    |
 
 ### 项目说明
 
@@ -410,6 +411,41 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 - 测试样例 (example/ex_forrange3.c)
 
   ```c
+  // micro-C example ForRange3
+  
+  void main() {
+      int i;
+      for i in range(1, 10, 2) {
+          print i;
+      }
+  }
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220604181050351](README/image-20220604181050351.png)
+
+  Token 序列、抽象语法树
+
+  ![image-20220604181057960](README/image-20220604181057960.png)
+
+  编译器运行结果
+
+  ![image-20220604181106110](README/image-20220604181106110.png)
+
+  栈式虚拟机堆栈
+
+  ![image-20220604181132513](README/image-20220604181132513.png)
+
+#### switch
+
+- 实现 
+
+- 测试样例 (example/ex_.c)
+
+  ```
   
   ```
 
@@ -458,8 +494,6 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
   栈式虚拟机堆栈
 
   
-
-#### 
 
 
 
