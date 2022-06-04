@@ -1,0 +1,8 @@
+// micro-C example Increment/Decrement Operator
+
+void main(int n) {
+    int i;
+    for (i = 0; i < n; i++) {
+        print i;
+    }
+}

@@ -194,6 +194,11 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr 
       let (jumptest, C1) =
            makeJump (cExpr e varEnv funEnv (IFNZRO labbegin :: C))
       addJump jumptest (Label labbegin :: cStmt body varEnv funEnv C1)
+    | For (e1, e2, e3, body) ->
+      let labbegin = newLabel()
+      let (jumptest, C1) = makeJump (cExpr e2 varEnv funEnv (IFNZRO labbegin :: C))
+      cExpr e1 varEnv funEnv (addINCSP -1 (addJump jumptest (Label labbegin :: cStmt body varEnv funEnv (cExpr e3 varEnv funEnv (addINCSP -1 C1)))))
+
     | Expr e ->
       cExpr e varEnv funEnv (addINCSP -1 C)
     | Block stmts ->

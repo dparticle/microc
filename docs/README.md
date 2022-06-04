@@ -25,21 +25,24 @@
 | ------------------ | ---------- | ----------------------------------- |
 | ++ -- 算法操作符   | 5          | 支持 i++ ++i                        |
 | += -= 等赋值运算符 | 5          |                                     |
-| 三目运算符         |            |                                     |
-| 注释 (*  *)        | 5          |                                     |
+| 三目运算符         | 5          |                                     |
+| 注释 (*  *)        | 5          | token 解析阶段，与解释和编译无关    |
 | 变量初始化         | 5          | 支持全局                            |
 | max min abs        | 5          |                                     |
-| string 类型        | 4          |                                     |
+| string 类型        | 4          | 固定长度                            |
 | print 字符串       | 5          | prints 输出字符串类型变量或者字符串 |
-| for while switch   |            |                                     |
+| for                | 5          | for (expr; expr; expr) stmt         |
+|                    |            |                                     |
 
-| 编译器             | 评分 (1-5) | 备注         |
-| ------------------ | ---------- | ------------ |
-| ++ -- 算法操作符   | 5          | 支持 i++ ++i |
-| += -= 等赋值运算符 | 5          |              |
-| 注释               |            |              |
-| 变量初始化         | 5          | 支持全局     |
-| max min abs        | 5          |              |
+| 编译器             | 评分 (1-5) | 备注                             |
+| ------------------ | ---------- | -------------------------------- |
+| ++ -- 算法操作符   | 5          | 支持 i++ ++i                     |
+| += -= 等赋值运算符 | 5          |                                  |
+| 三目运算符         | 5          |                                  |
+| 注释 (*  *)        | 5          | token 解析阶段，与解释和编译无关 |
+| 变量初始化         | 5          | 支持全局                         |
+| max min abs        | 5          |                                  |
+| for                | 5          | for (expr; expr; expr) stmt      |
 
 ### 项目说明
 
@@ -70,7 +73,7 @@
 
 #### 构建与运行（Unix /bin/bash）
 
-由于构建运行过程一个文件需要运行多条命令，因此写了一个自动运行脚本并存储结果的 bash 脚本，运行命令 `bash cmd/run.sh <relative_path>`
+由于构建运行过程一个文件需要运行多条命令，因此编写一个自动运行脚本的 bash 脚本，实现了获取文件名、支持任意长度参数和运行结果输出到文件。运行命令 `bash cmd/run.sh <relative_path>`
 
 ```bash
 #!/bin/bash
@@ -120,19 +123,19 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   解释器运行结果
 
-  <img src="README/image-20220603085829514.png" alt="image-20220603085829514" style="zoom: 50%;" />
+  ![](README/image-20220603085829514.png)
 
   Token 序列、抽象语法树
 
-  <img src="README/image-20220603085821406.png" alt="image-20220603085821406" style="zoom: 33%;" />
+  ![](README/image-20220603085821406.png)
 
   编译器运行结果
 
-  <img src="README/image-20220603085845979.png" alt="image-20220603085845979" style="zoom: 67%;" />
+  ![](README/image-20220603085845979.png)
 
   栈式虚拟机堆栈
 
-  <img src="README/image-20220603085914698.png" alt="image-20220603085914698" style="zoom: 50%;" />
+  ![](README/image-20220603085914698.png)
 
 #### 赋值运算符
 
@@ -167,19 +170,19 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   解释器运行结果
 
-  <img src="README/image-20220603162341235.png" alt="image-20220603162341235"  />
+  ![image-20220603162341235](README/image-20220603162341235.png)
 
   Token 序列、抽象语法树
 
-  <img src="README/image-20220603162402208.png" alt="image-20220603162402208" style="zoom: 67%;" />
+  ![image-20220603162402208](README/image-20220603162402208.png)
 
   编译器运行结果
 
-  <img src="README/image-20220603162429219.png" alt="image-20220603162429219"  />
+  ![](README/image-20220603162429219.png)
 
   栈式虚拟机堆栈
 
-  <img src="README/image-20220603162505368.png" alt="image-20220603162505368" style="zoom: 67%;" />
+  ![](README/image-20220603162505368.png)
 
 #### 三目运算符
 
@@ -204,7 +207,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   Token 序列、抽象语法树
 
-  <img src="README/image-20220603204450127.png" alt="image-20220603204450127"  />
+  ![](README/image-20220603204450127.png)
 
   编译器运行结果
 
@@ -242,7 +245,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   Token 序列、抽象语法树
 
-  <img src="README/image-20220603180932472.png" alt="image-20220603180932472" style="zoom:50%;" />
+  ![](README/image-20220603180932472.png)
 
   编译器运行结果
 
@@ -293,7 +296,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   Token 序列、抽象语法树
 
-  <img src="README/image-20220603151058829.png" alt="image-20220603151058829" style="zoom:50%;" />
+  ![](README/image-20220603151058829.png)
 
   编译器运行结果
 
@@ -303,7 +306,42 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   ![image-20220603161652398](README/image-20220603161652398.png)
 
-#### 
+#### for
+
+- 实现 `for (i; i < n; i++)`
+
+- 测试样例 (example/ex_.c)
+
+  ```c
+  // micro-C example Increment/Decrement Operator
+  
+  void main(int n) {
+      int i;
+      for (i = 0; i < n; i++) {
+          print i;
+      }
+  }
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220604164536676](README/image-20220604164536676.png)
+
+  Token 序列、抽象语法树
+
+  ![image-20220604164547930](README/image-20220604164547930.png)
+
+  编译器运行结果
+
+  ![image-20220604165018637](README/image-20220604165018637.png)
+
+  栈式虚拟机堆栈（其它几次循环与此类似）
+
+  ![image-20220604165131468](README/image-20220604165131468.png)
+
+#### for in range
 
 - 实现 
 
@@ -359,11 +397,11 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   
 
-1. 
+#### 
 
-   
 
-   
+
+
 
 ### 解决技术要点说明
 

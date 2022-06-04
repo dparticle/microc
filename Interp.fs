@@ -253,6 +253,18 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
 
         loop store
 
+    | For (e1, e2, e3, body) ->
+        let rec loop store1 =
+            let (v, store2) = eval e2 locEnv gloEnv store1
+            if v <> 0 then
+                let (_, store3) = eval e3 locEnv gloEnv (exec body locEnv gloEnv store2)
+                loop store3
+            else
+                store2
+
+        let (_, store1) = eval e1 locEnv gloEnv store
+        loop store1
+
     | Expr e ->
         // _ 表示丢弃e的值,返回 变更后的环境store1
         let (_, store1) = eval e locEnv gloEnv store
@@ -283,6 +295,7 @@ and stmtordec stmtordec locEnv gloEnv store =
 
 (* Evaluating micro-C expressions *)
 
+// 在 eval 中无法对 locEnv 做修改，因此无法将变量初始化作为一个表达式
 and eval e locEnv gloEnv store : int * store =
     match e with
     | Access acc ->
