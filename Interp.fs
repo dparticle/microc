@@ -320,22 +320,14 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
 
         let rec pickCase cases =
             match cases with
-            | Case (b, e1, body1) :: caser ->
+            | Case (e1, body1) :: caser ->
                 let (vCase, store2) = eval e1 locEnv gloEnv store
                 if vCase <> v then
                     pickCase caser
-                else  // 执行case的body
-                    let store3 = exec body1 locEnv gloEnv store2
-                    if b then
-                        store3
-                    else
-                        pickCase caser
-            | Default (b, body1) :: caser ->
-                let store2 = exec body1 locEnv gloEnv store
-                if b then
-                    store2
                 else
-                    pickCase caser
+                    exec body1 locEnv gloEnv store2
+            | Default (body1) :: caser ->
+                exec body1 locEnv gloEnv store
             | [] -> store
 
         pickCase body

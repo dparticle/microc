@@ -21,7 +21,7 @@ let third  (_, _, c) = c
 %token <int> CSTINT CSTBOOL  // <int> 是词元的语义值类型
 %token <string> CSTSTRING NAME
 
-%token CHAR ELSE IF INT STRING NULL PRINT PRINTS PRINTLN RETURN VOID WHILE FOR IN RANGE MAX MIN ABS SWITCH CASE DEFAULT BREAK CONTINUE
+%token CHAR ELSE IF INT STRING NULL PRINT PRINTS PRINTLN RETURN VOID WHILE FOR IN RANGE MAX MIN ABS SWITCH CASE DEFAULT CONTINUE
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC SPLUS SMINUS STIMES SDIV SMOD
 %token EQ NE GT LT GE LE
@@ -163,14 +163,9 @@ StmtU:
 ;
 
 StmtS:
-    CASE Expr COLON StmtM               { [Case(false, $2, $4)]}
-  | CASE Expr COLON StmtM BREAK SEMI    { [Case(true, $2, $4)] }  // true 有 break
-  | DEFAULT COLON StmtM                 { [Default(false, $3)] }
-  | DEFAULT COLON StmtM BREAK SEMI      { [Default(true, $3)]  }
-  | CASE Expr COLON StmtM StmtS         { [Case(false, $2, $4)] @ $5  }
-  | CASE Expr COLON StmtM BREAK SEMI StmtS  { [Case(true, $2, $4)] @ $7  }  // 需要用 @，否则报错
-  | DEFAULT COLON StmtM StmtS           { [Default(false, $3)] @ $4   }
-  | DEFAULT COLON StmtM BREAK SEMI StmtS{ [Default(true, $3)] @ $6   }
+    CASE Expr COLON StmtM               { [Case($2, $4)]}
+  | DEFAULT COLON StmtM                 { [Default($3)] }
+  | CASE Expr COLON StmtM StmtS         { [Case($2, $4)] @ $5  }  // 需要用 @，否则报错
 
 Expr:
     Access                              { Access $1           } //取$1的右值

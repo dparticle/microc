@@ -1,16 +1,14 @@
-// micro-C example For
+// micro-C example Switch
 
 void main(int n) {
     switch (n) {
     case 0:
         print 0;
-        break;
-    default:
-        print 999;
     case 1:
         print 1;
-    case 1:
-        print 11;
-        break;
+    case 2:
+        print 2;
+    default:
+        print 999;
     }
 }

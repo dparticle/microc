@@ -54,8 +54,8 @@ and stmt =
   // 语句块内部，可以是变量声明 或语句的列表
 
 and stmts =
-  | Case of bool * expr * stmt              (* Switch case                 *)
-  | Default of bool * stmt                  (* Switch default              *)
+  | Case of expr * stmt              (* Switch case                 *)
+  | Default of stmt                  (* Switch default              *)
 
 and stmtordec =
   | Dec of typ * string              (* Local variable declaration  *)

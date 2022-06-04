@@ -35,7 +35,6 @@ let keyword s =
     | "switch"  -> SWITCH
     | "case"    -> CASE
     | "default" -> DEFAULT
-    | "break"   -> BREAK
     | "in"      -> IN
     | "range"   -> RANGE
     | "max"     -> MAX

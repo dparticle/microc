@@ -33,6 +33,7 @@
 | print 字符串       | 5          | prints 输出字符串类型变量或者字符串 |
 | for                | 5          | for (expr; expr; expr) stmt         |
 | for in range       | 5          | 实现 python for in range 语法       |
+| switch             | 4          | 无法实现语句块                      |
 
 | 编译器             | 评分 (1-5) | 备注                             |
 | ------------------ | ---------- | -------------------------------- |
@@ -44,6 +45,7 @@
 | max min abs        | 5          |                                  |
 | for                | 5          | for (expr; expr; expr) stmt      |
 | for in range       | 5          | 实现 python for in range 语法    |
+| switch             | 4          | 无法实现语句块                   |
 
 ### 项目说明
 
@@ -441,31 +443,42 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 #### switch
 
-- 实现 
+- 实现 `switch case default`
 
 - 测试样例 (example/ex_.c)
 
-  ```
+  ```c
+  // micro-C example Switch
   
+  void main(int n) {
+      switch (n) {
+      case 0:
+          print 0;
+      case 1:
+          print 1;
+      case 2:
+          print 2;
+      default:
+          print 999;
+      }
+  }
   ```
 
 - 测试结果
 
   解释器运行结果
 
-  
+  ![image-20220604234144277](README/image-20220604234144277.png)Token 序列、抽象语法树
 
-  Token 序列、抽象语法树
-
-  
+  ![image-20220604234201571](README/image-20220604234201571.png)
 
   编译器运行结果
 
-  
+  ![image-20220604234209771](README/image-20220604234209771.png)
 
-  栈式虚拟机堆栈
+  栈式虚拟机堆栈（核心构建“标签链”）
 
-  
+  <img src="README/image-20220604234227554.png" alt="image-20220604234227554" style="zoom:50%;" />
 
 #### 
 
