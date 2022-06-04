@@ -21,7 +21,7 @@ let third  (_, _, c) = c
 %token <int> CSTINT CSTBOOL  // <int> 是词元的语义值类型
 %token <string> CSTSTRING NAME
 
-%token CHAR ELSE IF INT STRING NULL PRINT PRINTS PRINTLN RETURN VOID WHILE FOR MAX MIN ABS
+%token CHAR ELSE IF INT STRING NULL PRINT PRINTS PRINTLN RETURN VOID WHILE FOR IN RANGE MAX MIN ABS
 %token PLUS MINUS TIMES DIV MOD
 %token SELFINC SELFDEC SPLUS SMINUS STIMES SDIV SMOD
 %token EQ NE GT LT GE LE
@@ -150,6 +150,7 @@ StmtM:  /* No unbalanced if-else */
   | IF LPAR Expr RPAR StmtM ELSE StmtM  { If($3, $5, $7)       }
   | WHILE LPAR Expr RPAR StmtM          { While($3, $5)        }
   | FOR LPAR Expr SEMI Expr SEMI Expr RPAR StmtM  { For($3, $5, $7, $9) }
+  | FOR Access IN RANGE LPAR Expr RPAR StmtM  { ForRange1($2, $6, $8)}
 ;
 
 StmtU:

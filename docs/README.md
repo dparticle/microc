@@ -310,7 +310,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 - 实现 `for (i; i < n; i++)`
 
-- 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_for.c)
 
   ```c
   // micro-C example Increment/Decrement Operator
@@ -343,9 +343,40 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 #### for in range
 
-- 实现 
+- 实现 `for access in range(expr) stmt`
 
-- 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_forrange1.c)
+
+  ```c
+  // micro-C example ForRange1
+  
+  void main() {
+      int i;
+      for i in range(5) {
+          print i;
+      }
+  }
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220604174041693](README/image-20220604174041693.png)
+
+  Token 序列、抽象语法树
+
+  ![image-20220604174058220](README/image-20220604174058220.png)
+
+  编译器运行结果
+
+  ![image-20220604174113173](README/image-20220604174113173.png)
+
+  栈式虚拟机堆栈（其它几次循环与此类似）
+
+  ![image-20220604174148214](README/image-20220604174148214.png)
+
+- 测试样例 (example/ex_forrange2.c)
 
   ```
   
@@ -368,6 +399,8 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
   栈式虚拟机堆栈
 
   
+
+- 
 
 #### 
 

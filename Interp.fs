@@ -265,6 +265,20 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
         let (_, store1) = eval e1 locEnv gloEnv store
         loop store1
 
+    | ForRange1 (acc, e, body) ->
+        let (res, store1) = eval e locEnv gloEnv store
+        let (loc, store2) = access acc locEnv gloEnv store1
+        let rec loop l s =
+            let v = getSto s l
+            if v < res then
+                let s1 = exec body locEnv gloEnv s
+                let s2 = setSto s1 loc (v + 1)
+                loop l s2
+            else
+                s
+
+        loop loc store2
+
     | Expr e ->
         // _ 表示丢弃e的值,返回 变更后的环境store1
         let (_, store1) = eval e locEnv gloEnv store
