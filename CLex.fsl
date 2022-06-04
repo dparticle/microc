@@ -32,6 +32,10 @@ let keyword s =
     | "void"    -> VOID
     | "while"   -> WHILE
     | "for"     -> FOR
+    | "switch"  -> SWITCH
+    | "case"    -> CASE
+    | "default" -> DEFAULT
+    | "break"   -> BREAK
     | "in"      -> IN
     | "range"   -> RANGE
     | "max"     -> MAX

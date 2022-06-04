@@ -50,7 +50,12 @@ and stmt =
   | Expr of expr                     (* Expression statement   e;   *)
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)
+  | Switch of expr * stmts list       (* Switch                      *)
   // 语句块内部，可以是变量声明 或语句的列表
+
+and stmts =
+  | Case of bool * expr * stmt              (* Switch case                 *)
+  | Default of bool * stmt                  (* Switch default              *)
 
 and stmtordec =
   | Dec of typ * string              (* Local variable declaration  *)
