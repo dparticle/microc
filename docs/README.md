@@ -343,7 +343,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 #### for in range
 
-- 实现 `for access in range(expr) stmt`
+- 实现 `for access in range(expr) stmt` `for access in range(expr, expr) stmt` `for access in range(expr, expr, expr) stmt`
 
 - 测试样例 (example/ex_forrange1.c)
 
@@ -378,7 +378,38 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 - 测试样例 (example/ex_forrange2.c)
 
+  ```c
+  // micro-C example ForRange2
+  
+  void main() {
+      int i;
+      for i in range(5, 10) {
+          print i;
+      }
+  }
   ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220604175758667](README/image-20220604175758667.png)
+
+  Token 序列、抽象语法树
+
+  ![image-20220604175807174](README/image-20220604175807174.png)
+
+  编译器运行结果
+
+  ![image-20220604175815111](README/image-20220604175815111.png)
+
+  栈式虚拟机堆栈（其它几次循环与此类似）
+
+  ![image-20220604175836748](README/image-20220604175836748.png)
+
+- 测试样例 (example/ex_forrange3.c)
+
+  ```c
   
   ```
 
@@ -399,8 +430,6 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
   栈式虚拟机堆栈
 
   
-
-- 
 
 #### 
 

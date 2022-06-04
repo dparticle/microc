@@ -45,6 +45,7 @@ and stmt =
   | While of expr * stmt             (* While loop                  *)
   | For of expr * expr * expr * stmt (* For loop                    *)
   | ForRange1 of access * expr * stmt (* for access in range(expr) stmt *)
+  | ForRange2 of access * expr * expr * stmt (* for access in range(expr, expr) stmt *)
   | Expr of expr                     (* Expression statement   e;   *)
   | Return of expr option            (* Return from method          *)
   | Block of stmtordec list          (* Block: grouping and scope   *)
