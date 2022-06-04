@@ -330,7 +330,10 @@ let rec exec stmt (locEnv: locEnv) (gloEnv: gloEnv) (store: store) : store =
                 else
                     exec body1 locEnv gloEnv store2
             | Default (body1) :: caser ->
-                exec body1 locEnv gloEnv store
+                if caser.Length <> 0 then
+                    failwith ("switch default error")
+                else
+                    exec body1 locEnv gloEnv store
             | [] -> store
 
         pickCase body

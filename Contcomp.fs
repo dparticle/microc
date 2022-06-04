@@ -222,19 +222,19 @@ let rec cStmt stmt (varEnv : VarEnv) (funEnv : FunEnv) (C : instr list) : instr 
       let rec pickCase cases =
         match cases with
         | Case (e1, body1) :: caser ->
-            let (labnextbody, labnext, C2) = pickCase caser
+            let (labnext, C2) = pickCase caser
             let (label, C3) = addLabel(cStmt body1 varEnv funEnv (addGOTO labend C2))
             let (label2, C4) = addLabel(cExpr (Prim2 ("==", e, e1)) varEnv funEnv (IFZERO labnext :: C3))
-            (label,label2, C4)
+            (label2, C4)
         | Default (body1) :: caser ->
             if caser.Length <> 0 then
               failwith ("switch default error")
             else
               let (label, C2) = addLabel(cStmt body1 varEnv funEnv (addGOTO labend C1))
-              (label, label, C2)
-        | [] -> (labend, labend, C1)
+              (label, C2)
+        | [] -> (labend, C1)
 
-      let (label, label2, C2) = pickCase body
+      let (label, C2) = pickCase body
       C2
     | Expr e ->
       cExpr e varEnv funEnv (addINCSP -1 C)
