@@ -34,6 +34,7 @@
 | for                | 5          | for (expr; expr; expr) stmt         |
 | for in range       | 5          | 实现 python for in range 语法       |
 | switch             | 4          | 无法实现语句块                      |
+| 数组越界检查       | 5          | 判断数组下标是否越界                |
 
 | 编译器             | 评分 (1-5) | 备注                             |
 | ------------------ | ---------- | -------------------------------- |
@@ -260,6 +261,33 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   ![image-20220603183247887](README/image-20220603183247887.png)
 
+#### string 类型及 pirnt 打印
+
+- 实现 `string` 新类型和 `prints` 输出字符串
+
+- 测试样例 (example/ex_maxminabs.c)
+
+  ```c
+  // micro-C example string
+  
+  void main() {
+      string s;
+      s = "microc\n";
+      prints s;
+      prints "microcc\n";
+  }
+  ```
+
+- 测试结果
+
+  解释器运行结果
+
+  ![image-20220605000740597](README/image-20220605000740597.png)
+
+  Token 序列、抽象语法树
+
+  ![image-20220605000758033](README/image-20220605000758033.png)
+
 #### 变量初始化（支持下划线命名法、`(*  *)` 注释）
 
 - 实现 `Type i = Expr` 全局与局部初始化
@@ -445,7 +473,7 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
 - 实现 `switch case default`
 
-- 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_switch.c)
 
   ```c
   // micro-C example Switch
@@ -480,37 +508,30 @@ $bin_path/machine $ex_name.out ${@:2} > cmd/machine.txt
 
   <img src="README/image-20220604234227554.png" alt="image-20220604234227554" style="zoom:50%;" />
 
-#### 
+#### 数组越界检测
 
 - 实现 
 
-- 测试样例 (example/ex_.c)
+- 测试样例 (example/ex_arrayerror.c)
 
-  ```
+  ```c
+  // micro-C example array index out of size
   
+  void main() {
+      int i[5];
+      print i[6];
+  }
   ```
 
 - 测试结果
 
   解释器运行结果
 
-  
+  ![image-20220605000437383](README/image-20220605000437383.png)
 
   Token 序列、抽象语法树
 
-  
-
-  编译器运行结果
-
-  
-
-  栈式虚拟机堆栈
-
-  
-
-
-
-
+  ![image-20220605000503827](README/image-20220605000503827.png)
 
 ### 解决技术要点说明
 

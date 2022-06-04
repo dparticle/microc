@@ -211,7 +211,10 @@ let rec allocate (typ, x) (env0, nextloc) sto0 : locEnv * store =
     let (nextloc1, v, sto1) =
         match typ with
         //数组 调用 initSto 分配 i 个空间
-        | TypA (t, Some i) -> (nextloc + i, nextloc, initSto nextloc i sto0)
+        | TypA (t, Some i) ->
+            let store = initSto nextloc i sto0
+            let store2 = setSto store (nextloc + i) i  // 最后一个位置加一个数组长度
+            (nextloc + i, nextloc, store2)
         | TypS -> (nextloc + 10, 0, initSto nextloc 10 sto0)
         // 常规变量默认值是 0
         | _ -> (nextloc, 0, sto0)
@@ -522,6 +525,9 @@ and access acc locEnv gloEnv store : int * store =
         let (a, store1) = access acc locEnv gloEnv store
         let aval = getSto store1 a
         let (i, store2) = eval idx locEnv gloEnv store1
+        let len = getSto store1 (a - 1)
+        if i >= len then failwith ("index out of array size")
+        if i < 0 then failwith ("index out of array size")
         (aval + i, store2)
 
 and evals es locEnv gloEnv store : int list * store =
